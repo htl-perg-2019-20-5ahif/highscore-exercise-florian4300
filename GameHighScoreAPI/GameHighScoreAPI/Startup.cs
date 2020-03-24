@@ -40,6 +40,11 @@ Configuration["ConnectionStrings:DefaultConnection"]));
             {
                 app.UseDeveloperExceptionPage();
             }
+            using (var scope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
+            {
+                scope.ServiceProvider.GetService<HighscoreContext>().Database.Migrate();
+
+            }
 
             app.UseRouting();
             app.UseCors(

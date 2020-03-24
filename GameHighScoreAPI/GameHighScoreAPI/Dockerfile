@@ -6,9 +6,9 @@ EXPOSE 80
 
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1-buster AS build
 WORKDIR /src
-COPY ["GameHighScoreAPI/GameHighScoreAPI.csproj", "GameHighScoreAPI/"]
+COPY ["GameHighScoreAPI.csproj", "GameHighScoreAPI/"]
 RUN dotnet restore "GameHighScoreAPI/GameHighScoreAPI.csproj"
-COPY . .
+COPY . "GameHighScoreAPI"
 WORKDIR "/src/GameHighScoreAPI"
 RUN dotnet build "GameHighScoreAPI.csproj" -c Release -o /app/build
 
