@@ -1,0 +1,22 @@
+#error {
+    color: red;
+    display: none;
+}
+#hiddenScoreField {
+    display: none;
+}
+#scoreText {
+    display: none;
+}
+
+#highscoreInput {
+    display: none;
+}
+
+#highscoreOutput {
+    display: none;
+}
+
+#captcha {
+    display: none;
+}

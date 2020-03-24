@@ -1,66 +1,112 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Space Shooter</title>
-</head>
-<body>
+  </head>
+  <link href="index.css" type="text/css" />
+  <body>
+    <div id="error">
+      Error: Couldn't add the highscore, because the captacha didn't verify
+    </div>
+    <label id="scoreText">You reached a score of: </label>
     <label id="hiddenScoreField"></label>
+    <div
+      id="captcha"
+      class="g-recaptcha"
+      data-callback="showInput"
+      data-sitekey="6LfDoOMUAAAAAJFpV5Ay-p2kXpZ1ca5392YSsTNE"
+    ></div>
     <div id="highscoreInput">
-        <label>Please enter credentials consisting of three letters: </label><br/>
-        <input type="text" id="name" maxlength="3">
-        <button id="nameButton" onclick="addHighscore()">Enter</button>
+      <label>Please enter credentials consisting of three letters: </label
+      ><br />
+      <input type="text" id="name" maxlength="3" />
+      <button id="nameButton" onclick="addHighscore()">Enter</button>
     </div>
     <div id="highscoreOutput">
-        Highscore Table:
-        <table id="highscoreTable">
-            <tr>
-                <th>Name</th>
-                <th>Score</th>
-            </tr>
-            <tr>
-                <td>abc</td>
-                <td>1</td>
-              </tr>
-        </table>
+      Highscore Table:
+      <table id="highscoreTable">
+        <tr>
+          <th>Name</th>
+          <th>Score</th>
+        </tr>
+      </table>
     </div>
-</body>
-
-<script>
-    var highscoreList = [];
+  </body>
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+  <script>
+    function showInput() {
+      if (grecaptcha.getResponse() != "") {
+        document.getElementById("highscoreInput").style.display = "block";
+      } else {
+        document.getElementById("highscoreInput").style.display = "none";
+      }
+    }
     function addHighscore() {
-        document.getElementById("highscoreInput").style.visibility = "hidden";
-        highscoreList.push({name: document.getElementById("name").value, score: document.getElementById("hiddenScoreField").textContent})
-        console.log(highscoreList);
-        console.log(document.getElementById("name").value);
-        var xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function() {
-            if (this.readyState == 4 && this.status == 200) {
-            // Typical action to be performed when the document is ready:
-            console.log("resp", xhttp.responseText);
-            
-            document.getElementById("highscoreOutput").style.visibility = "visible";
-            //document.getElementById("demo").innerHTML = xhttp.responseText;
-            var tableRef = document.getElementById('highscoreTable').getElementsByTagName('tbody')[0];
+      /*grecaptcha.ready(function() {
+        grecaptcha.execute('6LfDoOMUAAAAAJFpV5Ay-p2kXpZ1ca5392YSsTNE', {action: 'homepage'}).then(function(token) {
+           console.log("token", token);
+        });
+    });*/
+      var response = grecaptcha.getResponse();
+      document.getElementById("highscoreInput").style.display = "none";
 
+      var xhttp = new XMLHttpRequest();
+      xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+          document.getElementById("highscoreInput").style.display = "none";
+          // Typical action to be performed when the document is ready:
+          console.log("resp", xhttp.responseText);
+
+          document.getElementById("highscoreOutput").style.display = "block";
+          var tableRef = document
+            .getElementById("highscoreTable")
+            .getElementsByTagName("tbody")[0];
+          console.log("rows", document.getElementById("highscoreTable").rows);
+
+          for (
+            var i = 1;
+            i < document.getElementById("highscoreTable").rows.length;
+            i++
+          ) {
+            document.getElementById("highscoreTable").deleteRow(i);
+          }
+
+          var highscoreEntries = JSON.parse(xhttp.responseText);
+          highscoreEntries.forEach(function(item, index) {
             // Insert a row in the table at the last row
-            var newRow   = tableRef.insertRow();
+            var newRow = tableRef.insertRow();
 
             // Insert a cell in the row at index 0
-            var newCell  = newRow.insertCell(0);
+            var newCell = newRow.insertCell(0);
 
             // Append a text node to the cell
-            var newText  = document.createTextNode('asdf');
+            var newText = document.createTextNode(item.credentials);
             newCell.appendChild(newText);
 
-            var newCell  = newRow.insertCell(1);
-            var newText  = document.createTextNode('10');
+            var newCell = newRow.insertCell(1);
+            var newText = document.createTextNode(item.score);
             newCell.appendChild(newText);
-            }
-        };
-        xhttp.open("GET", "", true);
-        xhttp.send();
+          });
+        }
+        if (this.readyState == 4 && this.status == 400) {
+          document.getElementById("error").style.display = "block";
+        }
+      };
+
+      xhttp.open("POST", "http://localhost:5000/highscoreentries", true);
+      xhttp.setRequestHeader("Content-type", "application/json");
+      xhttp.setRequestHeader("Accept", "application/json");
+      xhttp.send(
+        JSON.stringify({
+          credentials: document.getElementById("name").value,
+          score: parseInt(
+            document.getElementById("hiddenScoreField").innerHTML
+          ),
+          captcha: response
+        })
+      );
     }
-</script>
+  </script>
 </html>

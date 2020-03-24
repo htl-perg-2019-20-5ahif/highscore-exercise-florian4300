@@ -2,7 +2,7 @@ import { Scene, Types, CANVAS, Game, Physics, Input } from 'phaser';
 import { Spaceship, Direction } from './spaceship';
 import { Bullet } from './bullet';
 import { Meteor } from './meteor';
-
+import './index.css';
 
 /**
  * Space shooter scene
@@ -74,7 +74,7 @@ class ShooterScene extends Scene {
             meteor.kill();
             bullet.kill();
             this.score += 1;
-            document.getElementById("hiddenScoreField").textContent = this.score+"";
+            document.getElementById("hiddenScoreField").innerHTML = this.score+"";
         }, null, this);
         this.physics.add.collider(this.spaceShip, this.meteors, this.gameOver, null, this);
     }
@@ -128,8 +128,9 @@ class ShooterScene extends Scene {
         const text = this.add.text(this.game.canvas.width / 2, this.game.canvas.height / 2, "Game Over :-(", 
             { font: "65px Arial", fill: "#ff0044", align: "center" });
         text.setOrigin(0.5, 0.5);
-        document.getElementById("highscoreInput").style.visibility = "visible";
-        
+        document.getElementById("captcha").style.display = "block";
+        document.getElementById("hiddenScoreField").style.display = "block";
+        document.getElementById("scoreText").style.display = "block";
     }
 }
 
@@ -141,8 +142,6 @@ const config = {
     physics: { default: 'arcade' },
     audio: { noAudio: true }
 };
-document.getElementById("hiddenScoreField").style.visibility = "hidden";
-document.getElementById("highscoreInput").style.visibility = "hidden";
-document.getElementById("highscoreOutput").style.visibility = "hidden";
+document.getElementById("hiddenScoreField").textContent = 0+"";
 new Game(config);
 

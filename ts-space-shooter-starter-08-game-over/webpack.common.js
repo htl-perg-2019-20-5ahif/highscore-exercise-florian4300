@@ -15,6 +15,10 @@ module.exports = {
         use: 'ts-loader',
         exclude: /node_modules/,
       },
+      {
+        test: /\.css$/i,
+        use: ['style-loader', 'css-loader'],
+      },
     ],
   },
   resolve: {
@@ -25,10 +29,7 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: 'index.html'
     }),
-    new HtmlWebpackPlugin({
-      template: 'highscore.html',
-      filename: "highscore.html"
-    }),
+
     new CopyPlugin([
       { from: 'images', to: 'images' },
     ]),
