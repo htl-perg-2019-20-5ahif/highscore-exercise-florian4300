@@ -4,8 +4,8 @@ services:
   spacegame:
     image: florian4300/spacegame
     ports: 
-        - 8080:8080
-  
+        - 80:80
+    restart: always
   
   highscoreapi:
     environment:
@@ -15,9 +15,10 @@ services:
     #  context: .
     #  dockerfile: Dockerfile
     ports: 
-        - 80:80
+        - 8080:8080
     depends_on:
         - db
+    restart: always
   db:
       image: "mcr.microsoft.com/mssql/server"
       environment:
@@ -25,3 +26,4 @@ services:
           ACCEPT_EULA: "Y"
       ports: 
             - 1433:1433
+      restart: always
